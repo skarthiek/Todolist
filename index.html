@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Todo List</title>
+  <script crossorigin src="https://unpkg.com/react@18/umd/react.development.js"></script>
+  <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+  <style>
+    body { font-family: Arial, sans-serif; max-width: 500px; margin: 50px auto; padding: 20px; }
+    input { width: 70%; padding: 10px; }
+    button { padding: 10px 15px; margin-left: 10px; }
+    ul { list-style: none; padding: 0; }
+    li { display: flex; align-items: center; padding: 10px; border-bottom: 1px solid #eee; }
+    li input[type="checkbox"] { margin-right: 10px; }
+    li span { flex-grow: 1; }
+    li button { margin-left: auto; background: #ff4444; color: white; border: none; padding: 5px 10px; cursor: pointer; }
+    .completed { text-decoration: line-through; opacity: 0.6; }
+  </style>
+</head>
+<body>
+  <div id="root"></div>
+  <script type="text/babel">
+    const { useState } = React;
+
+    function TodoApp() {
+      const [todos, setTodos] = useState([]);
+      const [input, setInput] = useState('');
+
+      const addTodo = () => {
+        if (input.trim()) {
+          setTodos([...todos, { id: Date.now(), text: input, completed: false }]);
+          setInput('');
+        }
+      };
+
+      const toggleTodo = (id) => {
+        setTodos(todos.map(todo => 
+          todo.id === id ? { ...todo, completed: !todo.completed } : todo
+        ));
+      };
+
+      const deleteTodo = (id) => {
+        setTodos(todos.filter(todo => todo.id !== id));
+      };
+
+      return (
+        <div>
+          <h1>Todo List</h1>
+          <div>
+            <input 
+              value={input} 
+              onChange={(e) => setInput(e.target.value)} 
+              placeholder="Add a todo..."
+              onKeyPress={(e) => e.key === 'Enter' && addTodo()}
+            />
+            <button onClick={addTodo}>Add</button>
+          </div>
+          <ul>
+            {todos.map(todo => (
+              <li key={todo.id} className={todo.completed ? 'completed' : ''}>
+                <input 
+                  type="checkbox" 
+                  checked={todo.completed} 
+                  onChange={() => toggleTodo(todo.id)} 
+                />
+                <span>{todo.text}</span>
+                <button onClick={() => deleteTodo(todo.id)}>Delete</button>
+              </li>
+            ))}
+          </ul>
+        </div>
+      );
+    }
+
+    const root = ReactDOM.createRoot(document.getElementById('root'));
+    root.render(<TodoApp />);
+  </script>
+</body>
+</html>
